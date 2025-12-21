@@ -29,20 +29,20 @@ This project uses:
 ```
 AGENTIC_AI_TRAVEL_PLANNER
 ├── agent/
-│ └── travel_agent.py # Main agent orchestration logic
+│ └── travel_agent.py 
 │
 ├── tools/
-│ ├── flight_tool.py # Flight search tool
-│ ├── hotel_tool.py # Hotel recommendation tool
-│ ├── places_tool.py # Places discovery tool
-│ ├── weather_tool.py # Weather information tool
-│ └── budget_tool.py # Budget estimation tool
+│ ├── flight_tool.py 
+│ ├── hotel_tool.py 
+│ ├── places_tool.py 
+│ ├── weather_tool.py 
+│ └── budget_tool.py 
 │
 ├── app/
-│ └── streamlit_app.py # Streamlit UI
+│ └── streamlit_app.py 
 │
-├── requirements.txt # Python dependencies
-└── README.md # Project documentation
+├── requirements.txt 
+└── README.md 
 ```
 
 ---
