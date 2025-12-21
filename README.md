@@ -7,7 +7,7 @@ This project uses:
 
 - **LangChain** for agent orchestration  
 - **Ollama (LLaMA 3)** for local LLM inference  
-- **Streamlit** for a clean ChatGPT-style interactive UI  
+- **Streamlit** for a clean interactive UI  
 
 ---
 
