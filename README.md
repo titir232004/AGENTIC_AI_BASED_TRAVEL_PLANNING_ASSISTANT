@@ -1,4 +1,4 @@
-# 🤖 Agentic AI-Based Travel Planner (Agentic AI System)
+# Agentic AI-Based Travel Planner (Agentic AI System)
 
 The **Agentic AI-Based Travel Planner** is an intelligent AI assistant built using an **agentic workflow**.  
 It can generate complete travel plans using **natural language user queries**, with all reasoning and tool execution handled locally — **no API keys, no paid services, no cloud dependency**.
