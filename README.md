@@ -13,20 +13,20 @@ This project uses:
 
 ## ✨ Features
 
-- 🧠 Understands natural language travel queries  
-- 📍 Extracts source and destination cities automatically  
-- ✈️ Searches flights between cities  
-- 🏨 Recommends hotels based on budget  
-- 📍 Discovers tourist places  
-- 🌦️ Provides weather information  
-- 💰 Estimates total travel budget  
-- 🔐 Fully local execution (no API keys)  
-- 🗂️ Modular and production-ready code  
+-  Understands natural language travel queries  
+-  Extracts source and destination cities automatically  
+-  Searches flights between cities  
+-  Recommends hotels based on budget  
+-  Discovers tourist places  
+-  Provides weather information  
+-  Estimates total travel budget  
+-  Fully local execution (no API keys)  
+-  Modular and production-ready code  
 
 ---
 
 ## 📁 Project Structure
-
+```
 AGENTIC_AI_TRAVEL_PLANNER
 ├── agent/
 │ └── travel_agent.py # Main agent orchestration logic
@@ -43,7 +43,7 @@ AGENTIC_AI_TRAVEL_PLANNER
 │
 ├── requirements.txt # Python dependencies
 └── README.md # Project documentation
-
+```
 
 ---
 
@@ -56,5 +56,5 @@ AGENTIC_AI_TRAVEL_PLANNER
 
 After cloning repo, run:
 
-```
+```bash
 pip install -r requirements.txt
