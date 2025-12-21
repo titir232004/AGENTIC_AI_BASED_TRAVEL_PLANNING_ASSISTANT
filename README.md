@@ -11,7 +11,7 @@ This project uses:
 
 ---
 
-## ✨ Features
+##  Features
 
 -  Understands natural language travel queries  
 -  Extracts source and destination cities automatically  
@@ -25,7 +25,7 @@ This project uses:
 
 ---
 
-## 📁 Project Structure
+##  Project Structure
 ```
 AGENTIC_AI_TRAVEL_PLANNER
 ├── agent/
