@@ -1,97 +1,93 @@
-from langchain_community.llms import Ollama
-import re
+import json
+import os
+from utils.extract import extract_trip_details
 from tools.flight_tool import search_flights
-from tools.hotel_tool import recommend_hotel
 from tools.places_tool import discover_places
 from tools.weather_tool import get_weather
 from tools.budget_tool import estimate_budget
 
-# Local LLM (FREE, no API key)
-llm = Ollama(model="llama3")
+
+CITY_FOOD_COST = {
+    "Goa": 1000,
+    "Delhi": 900,
+    "Mumbai": 1000,
+    "Kolkata": 800,
+    "Bangalore": 900
+}
+
+DEFAULT_FOOD_COST = 800
 
 
-def extract_trip_days(query: str) -> int:
-    """Extract number of days from user query. Defaults to 3."""
-    match = re.search(r'(\d+)\s*day', query.lower())
-    if match:
-        return int(match.group(1))
-    return 3
+def run_travel_agent(user_query: str):
+    details = extract_trip_details(user_query)
 
+    if not details:
+        return {"error": "Could not understand your trip details."}
 
-def extract_cities(user_query: str):
-    """
-    Extract source and destination cities using LLM reasoning.
-    Returns a tuple: (source, destination)
-    """
-    prompt = f"""
-You are a travel assistant.
+    source = details["source"]
+    destination = details["destination"]
+    days = details["days"]
+    nights = details["nights"]
+    budget_limit = details["budget"]
 
-Extract source city and destination city from the user query.
+    if not budget_limit:
+        return {"error": "Please specify a budget (e.g. under 20000)."}
 
-Query:
-"{user_query}"
+    #  Robust food + local travel cost
+    per_day_food = CITY_FOOD_COST.get(destination, DEFAULT_FOOD_COST)
+    food_and_local = per_day_food * days
 
-Respond ONLY in JSON format:
-{{"source": "<city>", "destination": "<city>"}}
-"""
-
-    response = llm.invoke(prompt)
-
-    try:
-        data = eval(response)
-        return data["source"], data["destination"]
-    except Exception:
-        return None, None
-
-
-def run_travel_agent(user_query: str, nights: int = 3):
-    """Main function to plan a trip based on user query."""
-    print("🧠 Understanding user request...")
-
-    source, destination = extract_cities(user_query)
-    if not source or not destination:
-        return "❌ Could not understand the cities."
-
-    print(f"📍 Source: {source}, Destination: {destination}")
-
-    print("✈️ Searching flights...")
+    # Flight
     flight = search_flights(source, destination)
+    flight_price = flight.get("price", 0)
 
-    print("🏨 Finding hotels...")
-    hotel = recommend_hotel(destination, max_price=5000)
+    if flight_price == 0:
+        return {"error": f"No flights found from {source} to {destination}."}
 
-    print("📍 Discovering places...")
-    places = discover_places(destination)
+    if flight_price >= budget_limit:
+        return {"error": "Flight cost alone exceeds your budget."}
 
-    print("🌦️ Fetching weather...")
-    # You might want to update these lat/lon values dynamically
-    weather = get_weather(15.2993, 74.1240)
+    # hotels
+    BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    HOTEL_FILE = os.path.join(BASE_DIR, "data", "hotels.json")
 
-    print("💰 Estimating budget...")
-    days = extract_trip_days(user_query)
-    nights = max(days - 1, 1)
-    budget = estimate_budget(
-        flight["price"],
-        hotel["price_per_night"],
-        nights=nights
+    with open(HOTEL_FILE) as f:
+        hotels = json.load(f)
+
+    hotels = sorted(
+        [h for h in hotels if h.get("city", "").lower() == destination.lower()],
+        key=lambda x: x.get("price_per_night", 999999)
     )
+
+    for hotel in hotels:
+        hotel_price = hotel.get("price_per_night", 0)
+
+        budget = estimate_budget(
+            flight_price,
+            hotel_price,
+            nights,
+            food_and_local
+        )
+
+        if budget["total_cost"] <= budget_limit:
+            return {
+                "source": source,
+                "destination": destination,
+                "days": days,
+                "nights": nights,
+                "flight": flight,
+                "hotel": {
+                    "hotel_name": hotel.get("name", "Unknown"),
+                    "price_per_night": hotel_price,
+                    "rating": hotel.get("stars", 0)
+                },
+                "places": discover_places(destination),
+                "weather": get_weather(destination),
+                "budget": budget,
+                "budget_limit": budget_limit,
+                "budget_exceeded": False
+            }
 
     return {
-        "source": source,
-        "destination": destination,
-        "days": days,
-        "nights": nights,
-        "flight": flight,
-        "hotel": hotel,
-        "places": places,
-        "weather": weather,
-        "budget": budget
+        "error": f"No feasible plan fits within ₹{budget_limit}."
     }
-
-
-if __name__ == "__main__":
-    result = run_travel_agent(
-        "Plan a 3-day trip from Delhi to Kolkata under 20000"
-    )
-    print("\n✅ FINAL OUTPUT:")
-    print(result)
