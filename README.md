@@ -41,6 +41,10 @@ AGENTIC_AI_TRAVEL_PLANNER
 ├── app/
 │ └── streamlit_app.py 
 │
+├── util/
+│  ── extract.py
+│ └── formatter.py
+│
 ├── requirements.txt 
 └── README.md 
 ```
