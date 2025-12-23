@@ -1,9 +1,5 @@
-def estimate_budget(flight_price, hotel_price_per_night, nights):
-    """
-    Estimate total trip cost
-    """
+def estimate_budget(flight_price, hotel_price_per_night, nights, food_and_local):
     hotel_total = hotel_price_per_night * nights
-    food_and_local = 2500
 
     return {
         "flight": flight_price,
